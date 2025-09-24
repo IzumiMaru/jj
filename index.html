@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บอทถาม–ตอบเรื่องความตาย</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+    .chat-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .message {
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      max-width: 70%;
+    }
+    .user {
+      background: #673ab7;
+      color: #fff;
+      margin-left: auto;
+    }
+    .bot {
+      background: #fff;
+      color: #333;
+      margin-right: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .input-area {
+      display: flex;
+      padding: 15px;
+      background: rgba(0,0,0,0.05);
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #512da8;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #311b92;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>💬 บอทถาม–ตอบเรื่องความตาย</h2>
+  </header>
+
+  <div class="chat-container" id="chat"></div>
+
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="พิมพ์คำถามของคุณ...">
+    <button onclick="sendMessage()">ส่ง</button>
+  </div>
+
+  <script>
+    let knowledgeBase = {};
+
+    // โหลดข้อมูลจากไฟล์ JSON
+    fetch("qa.json")
+      .then(response => response.json())
+      .then(data => {
+        knowledgeBase = data;
+      });
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chat = document.getElementById("chat");
+      const text = input.value.trim();
+      if (text === "") return;
+
+      // ข้อความของผู้ใช้
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user";
+      userMsg.innerText = text;
+      chat.appendChild(userMsg);
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+
+      // ตอบกลับ
+      setTimeout(() => {
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot";
+
+        // ตรวจคำถามใน knowledgeBase
+        let found = false;
+        for (let key in knowledgeBase) {
+          if (text.includes(key)) {
+            botMsg.innerText = knowledgeBase[key];
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          botMsg.innerText = "ผมยังไม่มีคำตอบสำหรับคำถามนี้ ลองถามใหม่อีกครั้งนะครับ 🙂";
+        }
+
+        chat.appendChild(botMsg);
+        chat.scrollTop = chat.scrollHeight;
+      }, 500);
+    }
+  </script>
+</body>
+</html>
